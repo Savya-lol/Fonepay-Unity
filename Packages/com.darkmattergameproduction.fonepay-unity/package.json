@@ -1,5 +1,5 @@
 {
-  "name": "com.darkmattergameproduction.com.darkmatter.fonepay-unity",
+  "name": "com.darkmattergameproduction.fonepay-unity",
   "displayName": "Fonepay Unity",
   "version": "0.1.0",
   "unity": "6000.4",
@@ -17,7 +17,7 @@
   ],
   "author": {
     "name": "Savya Bikram Shah",
-    "url": "https://savya.com.jp",
+    "url": "https://savya.com.np",
     "email": "mail@savya.com.np"
   }
 }

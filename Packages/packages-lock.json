@@ -7,8 +7,8 @@
       "dependencies": {},
       "hash": "a9e27c03d411d2fca01cc7410c24c97cd77cb539"
     },
-    "com.darkmattergameproduction.com.darkmatter.fonepay-unity": {
-      "version": "file:com.darkmattergameproduction.com.darkmatter.fonepay-unity",
+    "com.darkmattergameproduction.fonepay-unity": {
+      "version": "file:com.darkmattergameproduction.fonepay-unity",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
