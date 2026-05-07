@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba80c86a04c584a649c6d31e8f10adad, type: 3}
   m_Name: FonepayConfig
   m_EditorClassIdentifier: Darkmatter.FonepayUnity::Darkmatter.Fonepay.FonepayConfigSO
-  environment: 0
+  environment: 1
   merchantCode: 2222050018947450
-  username: 
+  username: DARKMATTERGAME

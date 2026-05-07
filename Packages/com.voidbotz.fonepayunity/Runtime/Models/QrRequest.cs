@@ -10,10 +10,8 @@ namespace Darkmatter.Fonepay
     public struct QrRequest
     {
         public float amount;
-        public string prn;
         public string remarks1;
         public string remarks2;
-        public string pm;
     }
 
     [Serializable]
@@ -23,7 +21,6 @@ namespace Darkmatter.Fonepay
         public string prn;
         public string remarks1;
         public string remarks2;
-        public string pm;
         public string merchantCode;
         public string dataValidation;
         public string username;

@@ -32,18 +32,18 @@ namespace Darkmatter.Fonepay
         internal async Task<QrResult> PostQRAsync(QrRequest request, CancellationToken ct)
         {
             var amountStr = request.amount.ToString("0.00", CultureInfo.InvariantCulture);
+            var prn = GUID.Generate().ToString();
             var payload = new QrRequestPayload
             {
                 amount = request.amount,
-                prn = request.prn,
+                prn = prn,
                 remarks1 = request.remarks1,
                 remarks2 = request.remarks2,
-                pm = request.pm,
                 merchantCode = _config.MerchantCode,
                 username = _config.Username,
                 password = _config.GetPassword(),
                 dataValidation = _signer.SignQrRequest(
-                    amountStr, request.prn, _config.MerchantCode,
+                    amountStr, prn, _config.MerchantCode,
                     request.remarks1, request.remarks2),
             };
             var response = await SendPostAsync<QrResponse>(QrPath, payload, ct);

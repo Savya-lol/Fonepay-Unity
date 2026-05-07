@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace Darkmatter.Fonepay
         /// <param name="req"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public Task<QrResult> PostQRAsync(QrRequest req, CancellationToken ct = default)
+        public Task<QrResult> PurchaseAsync(QrRequest req, CancellationToken ct = default)
             => _api.PostQRAsync(req, ct);
 
         /// <summary>
@@ -47,5 +48,39 @@ namespace Darkmatter.Fonepay
         /// <returns></returns>
         public Task<TaxRefundResponse> PostTaxRefundAsync(TaxRefundRequest req, CancellationToken ct = default)
             => _api.PostTaxRefundAsync(req, ct);
+
+        /// <summary>
+        /// Connects to the QR websocket and awaits the terminal payment frame, then auto-disconnects.
+        /// Pass <see cref="QrResult.thirdpartyQrWebSocketUrl"/> from <see cref="PurchaseAsync"/>.
+        /// </summary>
+        public async Task<QRPaymentStatus> AwaitPaymentAsync(
+            string websocketUrl,
+            Action<bool> onQrVerified = null,
+            CancellationToken ct = default)
+        {
+            if (string.IsNullOrEmpty(websocketUrl))
+                throw new ArgumentException("Websocket URL required", nameof(websocketUrl));
+
+            using var ws = new FonepayWebsocketClient();
+            var tcs = new TaskCompletionSource<QRPaymentStatus>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+
+            if (onQrVerified != null)
+                ws.OnQrVerified += onQrVerified;
+
+            ws.OnPaymentReceived += msg => tcs.TrySetResult(msg.Status);
+
+            using var ctReg = ct.Register(() => tcs.TrySetCanceled(ct));
+
+            try
+            {
+                await ws.ConnectAsync(websocketUrl, ct);
+                return await tcs.Task;
+            }
+            finally
+            {
+                await ws.DisconnectAsync();
+            }
+        }
     }
 }
