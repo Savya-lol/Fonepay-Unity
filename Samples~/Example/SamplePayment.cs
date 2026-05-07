@@ -30,14 +30,18 @@ namespace Darkmatter.Fonepay.Samples
 
         private async UniTask InitiatePayment()
         {
+            if (_payCts != null) return;
+
+            payButton.interactable = false;
             var fonepay = new FonepayClient();
-            _payCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+            _payCts = cts;
 
             try
             {
                 var qr = await fonepay.PurchaseAsync(
                     new QrRequest { amount = amount, remarks1 = "sample" },
-                    _payCts.Token);
+                    cts.Token);
 
                 if (qr.qrCode != null)
                 {
@@ -51,7 +55,7 @@ namespace Darkmatter.Fonepay.Samples
                 var payment = await fonepay.AwaitPaymentAsync(
                     qr.thirdpartyQrWebSocketUrl,
                     onQrVerified: v => Debug.Log($"Fonepay QR verified: {v}"),
-                    ct: _payCts.Token);
+                    ct: cts.Token);
 
                 Debug.Log($"Payment frame: {JsonUtility.ToJson(payment)}");
                 ShowResult(payment.Outcome == PaymentOutcome.Complete);
@@ -73,14 +77,19 @@ namespace Darkmatter.Fonepay.Samples
             }
             finally
             {
-                _payCts.Dispose();
-                _payCts = null;
+                cts.Dispose();
+                if (_payCts == cts) _payCts = null;
+                if (this != null && payButton != null) payButton.interactable = true;
             }
         }
 
         private void ShowResult(bool ok)
         {
-            qrImage.gameObject.SetActive(false);
+            if (qrImage != null)
+            {
+                qrImage.sprite = null;
+                qrImage.gameObject.SetActive(false);
+            }
             if (successObject != null) successObject.SetActive(ok);
             if (failedObject != null) failedObject.SetActive(!ok);
         }
