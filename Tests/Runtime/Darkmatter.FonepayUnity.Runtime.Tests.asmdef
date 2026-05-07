@@ -3,6 +3,7 @@
     "rootNamespace": "",
     "references": [
         "Darkmatter.FonepayUnity",
+        "UniTask",
         "UnityEngine.TestRunner"
     ],
     "includePlatforms": [],
