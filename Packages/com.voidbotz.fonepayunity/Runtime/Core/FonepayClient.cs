@@ -27,7 +27,7 @@ namespace Darkmatter.Fonepay
         /// <param name="req"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public Task<QrResponse> PostQRAsync(QrRequest req, CancellationToken ct = default)
+        public Task<QrResult> PostQRAsync(QrRequest req, CancellationToken ct = default)
             => _api.PostQRAsync(req, ct);
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Darkmatter.Fonepay
         /// <param name="prn"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        public Task<QrResponse> GetStatusAsync(string prn, CancellationToken ct = default)
+        public Task<QrResult> GetStatusAsync(string prn, CancellationToken ct = default)
             => _api.GetStatusAsync(prn, ct);
 
         /// <summary>

@@ -14,8 +14,8 @@ namespace Darkmatter.Fonepay
     /// </summary>
     internal sealed class FonepayApiClient
     {
-        private const string QrPath        = "merchant/merchantDetailsForThirdParty/thirdPartyDynamicQrDownload";
-        private const string StatusPath    = "merchant/merchantDetailsForThirdParty/thirdPartyDynamicQrGetStatus";
+        private const string QrPath = "merchant/merchantDetailsForThirdParty/thirdPartyDynamicQrDownload";
+        private const string StatusPath = "merchant/merchantDetailsForThirdParty/thirdPartyDynamicQrGetStatus";
         private const string TaxRefundPath = "merchant/merchantDetailsForThirdParty/taxRefund";
 
         private readonly FonepayConfigSO _config;
@@ -29,27 +29,28 @@ namespace Darkmatter.Fonepay
 
         // ── public API ────────────────────────────────────────────────────
 
-        internal Task<QrResponse> PostQRAsync(QrRequest request, CancellationToken ct)
+        internal async Task<QrResult> PostQRAsync(QrRequest request, CancellationToken ct)
         {
             var amountStr = request.amount.ToString("0.00", CultureInfo.InvariantCulture);
             var payload = new QrRequestPayload
             {
-                amount       = request.amount,
-                prn          = request.prn,
-                remarks1     = request.remarks1,
-                remarks2     = request.remarks2,
-                pm           = request.pm,
+                amount = request.amount,
+                prn = request.prn,
+                remarks1 = request.remarks1,
+                remarks2 = request.remarks2,
+                pm = request.pm,
                 merchantCode = _config.MerchantCode,
-                username     = _config.Username,
-                password     = _config.GetPassword(),
+                username = _config.Username,
+                password = _config.GetPassword(),
                 dataValidation = _signer.SignQrRequest(
                     amountStr, request.prn, _config.MerchantCode,
                     request.remarks1, request.remarks2),
             };
-            return SendPostAsync<QrResponse>(QrPath, payload, ct);
+            var response = await SendPostAsync<QrResponse>(QrPath, payload, ct);
+            return MapToQrResult(response);
         }
 
-        internal Task<QrResponse> GetStatusAsync(string prn, CancellationToken ct)
+        internal async Task<QrResult> GetStatusAsync(string prn, CancellationToken ct)
         {
             var sig = _signer.SignStatusCheck(prn, _config.MerchantCode);
             var url = $"{_config.ResolveBaseUrl()}{StatusPath}" +
@@ -58,24 +59,26 @@ namespace Darkmatter.Fonepay
                       $"&dataValidation={UnityWebRequest.EscapeURL(sig)}" +
                       $"&username={UnityWebRequest.EscapeURL(_config.Username)}" +
                       $"&password={UnityWebRequest.EscapeURL(_config.GetPassword())}";
-            return SendAsync<QrResponse>(url, UnityWebRequest.kHttpVerbGET, null, ct);
+            var response = await SendAsync<QrResponse>(url, UnityWebRequest.kHttpVerbGET, null, ct);
+            return MapToQrResult(response);
         }
+
 
         internal Task<TaxRefundResponse> PostTaxRefundAsync(TaxRefundRequest r, CancellationToken ct)
         {
             var invoiceDate = r.invoiceDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            var amountStr   = r.transactionAmount.ToString("0.00", CultureInfo.InvariantCulture);
+            var amountStr = r.transactionAmount.ToString("0.00", CultureInfo.InvariantCulture);
             var payload = new TaxRefundRequestPayload
             {
-                fonepayTraceId    = r.fonepayTraceId,
-                merchantPRN       = r.merchantPRN,
-                invoiceNumber     = r.invoiceNumber,
-                invoiceDate       = invoiceDate,
+                fonepayTraceId = r.fonepayTraceId,
+                merchantPRN = r.merchantPRN,
+                invoiceNumber = r.invoiceNumber,
+                invoiceDate = invoiceDate,
                 transactionAmount = r.transactionAmount,
-                merchantCode      = _config.MerchantCode,
-                username          = _config.Username,
-                password          = _config.GetPassword(),
-                dataValidation    = _signer.SignTaxRefund(
+                merchantCode = _config.MerchantCode,
+                username = _config.Username,
+                password = _config.GetPassword(),
+                dataValidation = _signer.SignTaxRefund(
                     r.fonepayTraceId, r.merchantPRN, r.invoiceNumber,
                     invoiceDate, amountStr, _config.MerchantCode),
             };
@@ -86,7 +89,7 @@ namespace Darkmatter.Fonepay
 
         private Task<T> SendPostAsync<T>(string relativePath, object body, CancellationToken ct)
         {
-            var url  = _config.ResolveBaseUrl() + relativePath;
+            var url = _config.ResolveBaseUrl() + relativePath;
             var json = JsonUtility.ToJson(body);
             return SendAsync<T>(url, UnityWebRequest.kHttpVerbPOST, json, ct);
         }
@@ -103,11 +106,22 @@ namespace Darkmatter.Fonepay
                 req.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonBody));
                 req.SetRequestHeader("Content-Type", "application/json");
             }
+
             req.SetRequestHeader("Accept", "application/json");
 
             CancellationTokenRegistration reg = default;
             if (ct.CanBeCanceled)
-                reg = ct.Register(() => { try { req.Abort(); } catch { /* ignored */ } });
+                reg = ct.Register(() =>
+                {
+                    try
+                    {
+                        req.Abort();
+                    }
+                    catch
+                    {
+                        /* ignored */
+                    }
+                });
 
             var op = req.SendWebRequest();
             op.completed += _ =>
@@ -135,13 +149,17 @@ namespace Darkmatter.Fonepay
 
                     var text = req.downloadHandler.text ?? string.Empty;
                     T result;
-                    try { result = JsonUtility.FromJson<T>(text); }
+                    try
+                    {
+                        result = JsonUtility.FromJson<T>(text);
+                    }
                     catch (Exception e)
                     {
                         tcs.TrySetException(new FonepayError(0,
                             $"JSON parse failed: {e.Message}. Body: {text}", url));
                         return;
                     }
+
                     tcs.TrySetResult(result);
                 }
                 finally
@@ -151,6 +169,22 @@ namespace Darkmatter.Fonepay
                 }
             };
             return tcs.Task;
+        }
+
+
+        private QrResult MapToQrResult(QrResponse response)
+        {
+            return new QrResult
+            {
+                message = response.message,
+                qrCode = string.IsNullOrEmpty(response.qrMessage)
+                    ? null
+                    : FonepayQRGenerator.GenerateTexture(response.qrMessage),
+                status = response.status,
+                statusCode = response.statusCode,
+                success = response.success,
+                thirdpartyQrWebSocketUrl = response.thirdpartyQrWebSocketUrl,
+            };
         }
     }
 }

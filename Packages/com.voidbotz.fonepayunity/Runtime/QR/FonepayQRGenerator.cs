@@ -55,6 +55,8 @@ namespace Darkmatter.Fonepay
 
         public static bool[,] GenerateMatrix(string text, EccLevel ecc = EccLevel.M)
         {
+            if (string.IsNullOrEmpty(text))
+                throw new System.ArgumentException("QR text must be non-empty", nameof(text));
             byte[] data = System.Text.Encoding.UTF8.GetBytes(text);
             var (version, ecBlocks) = ChooseVersion(data.Length, ecc);
             byte[] codewords = BuildCodewords(data, version, ecc, ecBlocks);
