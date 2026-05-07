@@ -2,7 +2,7 @@
 
 Fonepay payment SDK for Unity. Generate Fonepay QR codes, await payment confirmation over websocket, and process tax refunds — all from a single async-friendly client.
 
-This repo is a **Unity 6000.4.5f1** project that hosts the package source under `Packages/com.darkmattergameproduction.com.darkmatter.fonepay-unity/` and a sample scene under `Assets/`.
+This repo is a **Unity 6000.4.5f1** project that hosts the package source under `Packages/com.darkmattergameproduction.fonepay-unity/` and a sample scene under `Assets/`.
 
 ---
 
@@ -30,20 +30,28 @@ This repo is a **Unity 6000.4.5f1** project that hosts the package source under 
 
 ## Install
 
-### As a local package (this repo)
+### Via Unity Package Manager (recommended)
+
+**Window > Package Manager > + > Install package from git URL**
+
+```
+https://github.com/Savya-lol/Fonepay-Unity.git#0.1.0
+```
+
+Or edit `Packages/manifest.json` directly:
+```json
+"com.darkmattergameproduction.fonepay-unity": "https://github.com/Savya-lol/Fonepay-Unity.git#0.1.0"
+```
+
+Pin to any released tag (e.g. `#0.1.0`) or track the floating `upm` branch (`#upm`). The `upm` branch is the package subtree, auto-published from `main` via GitHub Actions.
+
+### As a local clone of this repo
 
 1. Clone:
    ```bash
-   git clone <repo-url> "Fonepay Unity"
+   git clone https://github.com/Savya-lol/Fonepay-Unity.git "Fonepay Unity"
    ```
-2. Open the project in Unity Hub (6000.4.5f1).
-
-### As a Git package in another project
-
-Add to your target project's `Packages/manifest.json`:
-```json
-"com.darkmattergameproduction.com.darkmatter.fonepay-unity": "https://github.com/<owner>/<repo>.git?path=/Packages/com.darkmattergameproduction.com.darkmatter.fonepay-unity"
-```
+2. Open in Unity Hub (6000.4.5f1).
 
 ### Setup credentials
 
@@ -164,7 +172,7 @@ TaxRefundResponse refund = await fonepay.PostTaxRefundAsync(new TaxRefundRequest
 ```
 Assets/                                Sample scene + test MonoBehaviour
 Packages/
-  com.darkmattergameproduction.com.darkmatter.fonepay-unity/
+  com.darkmattergameproduction.fonepay-unity/
     Runtime/
       Core/        FonepayClient, FonepayConfig, FonepayConfigSO
       API/         FonepayApiClient (REST), FonepayWebsocketClient
@@ -228,4 +236,4 @@ CLI (Unity 6 batchmode):
 
 ## License
 
-See `Packages/com.darkmattergameproduction.com.darkmatter.fonepay-unity/Third Party Notices.md` for third-party attributions (QRCoder, UniTask). Project license: TBD.
+See `Packages/com.darkmattergameproduction.fonepay-unity/Third Party Notices.md` for third-party attributions (QRCoder, UniTask). Project license: TBD.

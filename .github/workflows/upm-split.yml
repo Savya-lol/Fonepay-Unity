@@ -1,0 +1,22 @@
+name: Publish UPM
+on:
+  push:
+    branches: [main]
+    paths: ['Packages/com.darkmattergameproduction.fonepay-unity/**']
+  workflow_dispatch:
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Split subtree to upm branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git subtree split --prefix=Packages/com.darkmattergameproduction.fonepay-unity -b upm
+          git push origin upm --force
