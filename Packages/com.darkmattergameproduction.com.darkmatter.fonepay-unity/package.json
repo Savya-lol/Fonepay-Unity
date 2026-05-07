@@ -1,0 +1,23 @@
+{
+  "name": "com.darkmattergameproduction.com.darkmatter.fonepay-unity",
+  "displayName": "Fonepay Unity",
+  "version": "0.1.0",
+  "unity": "6000.4",
+  "unityRelease": "5f1",
+  "description": "Fonepay payment integration for Unity. Generate Fonepay QR codes, await payment confirmation via websocket, and process tax refunds. Credentials managed via Tools > Fonepay > Settings.",
+  "dependencies": {
+    "com.unity.test-framework": "1.6.0"
+  },
+  "samples": [
+    {
+      "displayName": "Example Payment Flow",
+      "description": "Minimal MonoBehaviour: request QR, render, await payment with cancel support.",
+      "path": "Samples~/Example"
+    }
+  ],
+  "author": {
+    "name": "Savya Bikram Shah",
+    "url": "https://savya.com.jp",
+    "email": "mail@savya.com.np"
+  }
+}

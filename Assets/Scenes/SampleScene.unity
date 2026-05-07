@@ -445,7 +445,6 @@ GameObject:
   - component: {fileID: 508689485}
   - component: {fileID: 508689487}
   - component: {fileID: 508689486}
-  - component: {fileID: 508689488}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -515,22 +514,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 508689484}
   m_CullTransparentMesh: 1
---- !u!114 &508689488
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 508689484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57da22305386447fcabd663378359ede, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Darkmatter.Fonepay.Samples.SamplePayment
-  qrImage: {fileID: 308706331}
-  successObject: {fileID: 454747}
-  failedObject: {fileID: 1400840764}
-  payButton: {fileID: 1002816889}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
