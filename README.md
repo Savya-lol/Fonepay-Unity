@@ -35,7 +35,7 @@ This repo is a **Unity 6000.4.5f1** project that hosts the package source under 
 **Window > Package Manager > + > Install package from git URL**
 
 ```
-https://github.com/Savya-lol/Fonepay-Unity.git#0.1.0
+https://github.com/Savya-lol/Fonepay-Unity.git#0.2.0
 ```
 
 Or edit `Packages/manifest.json` directly:
