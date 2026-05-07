@@ -1,7 +1,7 @@
 {
   "name": "com.darkmattergameproduction.fonepay-unity",
   "displayName": "Fonepay Unity",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "unity": "6000.4",
   "unityRelease": "5f1",
   "description": "Fonepay payment integration for Unity. Generate Fonepay QR codes, await payment confirmation via websocket, and process tax refunds. Credentials managed via Tools > Fonepay > Settings.",
