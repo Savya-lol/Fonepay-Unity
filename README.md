@@ -40,7 +40,7 @@ https://github.com/Savya-lol/Fonepay-Unity.git#0.1.0
 
 Or edit `Packages/manifest.json` directly:
 ```json
-"com.darkmattergameproduction.fonepay-unity": "https://github.com/Savya-lol/Fonepay-Unity.git#0.1.0"
+"com.darkmattergameproduction.fonepay-unity": "https://github.com/Savya-lol/Fonepay-Unity.git#0.2.0"
 ```
 
 Pin to any released tag (e.g. `#0.1.0`) or track the floating `upm` branch (`#upm`). The `upm` branch is the package subtree, auto-published from `main` via GitHub Actions.
