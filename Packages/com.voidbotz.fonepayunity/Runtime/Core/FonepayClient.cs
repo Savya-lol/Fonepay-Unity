@@ -69,6 +69,14 @@ namespace Darkmatter.Fonepay
                 ws.OnQrVerified += onQrVerified;
 
             ws.OnPaymentReceived += msg => tcs.TrySetResult(msg.Status);
+            ws.OnClosed += err =>
+            {
+                if (err != null)
+                    tcs.TrySetException(err);
+                else
+                    tcs.TrySetException(new InvalidOperationException(
+                        "Fonepay websocket closed before payment frame received."));
+            };
 
             using var ctReg = ct.Register(() => tcs.TrySetCanceled(ct));
 

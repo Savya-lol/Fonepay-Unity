@@ -27,7 +27,7 @@ namespace Darkmatter.Fonepay.Samples
             var fonepay = new FonepayClient();
             var request = new QrRequest
             {
-                amount = 0.5f,
+                amount = 1f,
                 remarks1 = "mausham ko paisa"
             };
             var qr = await fonepay.PurchaseAsync(request, destroyCancellationToken);
@@ -45,7 +45,6 @@ namespace Darkmatter.Fonepay.Samples
                 qr.thirdpartyQrWebSocketUrl,
                 onQrVerified: v => Debug.Log($"Fonepay QR verified: {v}"),
                 ct: destroyCancellationToken);
-            Debug.Log($"{JsonUtility.ToJson(payment)}");
             var ok = payment.Outcome == PaymentOutcome.Complete;
 
             qrImage.gameObject.SetActive(false);
