@@ -12,6 +12,7 @@ namespace Darkmatter.Fonepay
         public int statusCode;
         public bool success;
         public string thirdpartyQrWebSocketUrl;
+        public string qrMessage;
     }
 
 

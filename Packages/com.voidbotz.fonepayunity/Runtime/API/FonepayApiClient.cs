@@ -177,14 +177,29 @@ namespace Darkmatter.Fonepay
             return new QrResult
             {
                 message = response.message,
-                qrCode = string.IsNullOrEmpty(response.qrMessage)
-                    ? null
-                    : FonepayQRGenerator.GenerateTexture(response.qrMessage),
+                qrCode = TryGenerateQr(response.qrMessage),
                 status = response.status,
                 statusCode = response.statusCode,
                 success = response.success,
                 thirdpartyQrWebSocketUrl = response.thirdpartyQrWebSocketUrl,
+                qrMessage = response.qrMessage,
             };
+        }
+
+        private static Texture2D TryGenerateQr(string qrMessage)
+        {
+            if (string.IsNullOrEmpty(qrMessage))
+                return null;
+            try
+            {
+                return FonepayQRGenerator.GenerateTexture(qrMessage);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"Fonepay QR render failed ({ex.Message}). " +
+                    "Use QrResult.qrMessage with an external renderer.");
+                return null;
+            }
         }
     }
 }

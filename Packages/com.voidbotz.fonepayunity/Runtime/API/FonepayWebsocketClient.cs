@@ -13,6 +13,7 @@ namespace Darkmatter.Fonepay
         internal event Action<bool> OnQrVerified;
         internal event Action<WebsocketMessage<QRPaymentStatus>> OnPaymentReceived;
         internal event Action<string> OnRawMessage;
+        internal event Action<Exception> OnClosed;
 
         private ClientWebSocket _client;
         private CancellationTokenSource _cts;
@@ -51,6 +52,7 @@ namespace Darkmatter.Fonepay
             CancellationToken cancellationToken)
         {
             var buffer = new byte[4096];
+            Exception error = null;
 
             try
             {
@@ -70,9 +72,9 @@ namespace Darkmatter.Fonepay
             {
                 // Expected during disconnect.
             }
-            catch (WebSocketException)
+            catch (WebSocketException ex)
             {
-                // Network disconnect or broken socket.
+                error = ex;
             }
             catch (ObjectDisposedException)
             {
@@ -80,7 +82,11 @@ namespace Darkmatter.Fonepay
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"WebSocket receive error: {ex.Message}");
+                error = ex;
+            }
+            finally
+            {
+                OnClosed?.Invoke(error);
             }
         }
 

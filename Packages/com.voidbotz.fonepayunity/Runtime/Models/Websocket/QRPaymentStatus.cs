@@ -7,7 +7,7 @@ namespace Darkmatter.Fonepay
     {
         public string remarks1;
         public string remarks2;
-        public DateTime transactionDate;
+        public string transactionDate;
         public string productNumber;
         public float amount;
         public string message;

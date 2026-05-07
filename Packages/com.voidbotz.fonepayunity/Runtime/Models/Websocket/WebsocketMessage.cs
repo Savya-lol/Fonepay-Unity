@@ -9,7 +9,6 @@ namespace Darkmatter.Fonepay
         public string merchantId;
         public string deviceId;
         public string transactionStatus;
-        private T _status;
-        public T Status => _status ??= JsonUtility.FromJson<T>(transactionStatus);
+        public T Status => JsonUtility.FromJson<T>(transactionStatus);
     }
 }

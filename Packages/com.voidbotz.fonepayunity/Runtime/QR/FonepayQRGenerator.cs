@@ -1,11 +1,13 @@
+using System.Collections;
+using QRCoder;
 using UnityEngine;
 
 namespace Darkmatter.Fonepay
 {
     /// <summary>
-    /// Pure C# QR Code generator. Byte mode, ECC L/M/Q/H, versions 1–10.
+    /// QR code generator backed by QRCoder (MIT). See Plugins/QRCoder-LICENSE.txt.
     /// </summary>
-    public static partial class FonepayQRGenerator
+    public static class FonepayQRGenerator
     {
         public enum EccLevel { L, M, Q, H }
 
@@ -25,16 +27,21 @@ namespace Darkmatter.Fonepay
             Color dark = darkColor ?? Color.black;
             Color light = lightColor ?? Color.white;
 
+            var pixels = new Color[texSize * texSize];
             for (int row = 0; row < size; row++)
             for (int col = 0; col < size; col++)
             {
                 Color c = matrix[row, col] ? dark : light;
+                int yBase = (size - 1 - row) * pixelSize;
+                int xBase = col * pixelSize;
                 for (int py = 0; py < pixelSize; py++)
-                for (int px = 0; px < pixelSize; px++)
-                    tex.SetPixel(col * pixelSize + px,
-                        (size - 1 - row) * pixelSize + py, c);
+                {
+                    int rowStart = (yBase + py) * texSize + xBase;
+                    for (int px = 0; px < pixelSize; px++)
+                        pixels[rowStart + px] = c;
+                }
             }
-
+            tex.SetPixels(pixels);
             tex.Apply();
             return tex;
         }
@@ -57,10 +64,26 @@ namespace Darkmatter.Fonepay
         {
             if (string.IsNullOrEmpty(text))
                 throw new System.ArgumentException("QR text must be non-empty", nameof(text));
-            byte[] data = System.Text.Encoding.UTF8.GetBytes(text);
-            var (version, ecBlocks) = ChooseVersion(data.Length, ecc);
-            byte[] codewords = BuildCodewords(data, version, ecc, ecBlocks);
-            return BuildMatrix(version, codewords);
+
+            using var data = new QRCodeGenerator().CreateQrCode(text, MapEcc(ecc), forceUtf8: true);
+            int size = data.ModuleMatrix.Count;
+            var matrix = new bool[size, size];
+            for (int row = 0; row < size; row++)
+            {
+                BitArray bits = data.ModuleMatrix[row];
+                for (int col = 0; col < size; col++)
+                    matrix[row, col] = bits[col];
+            }
+            return matrix;
         }
+
+        static QRCodeGenerator.ECCLevel MapEcc(EccLevel e) => e switch
+        {
+            EccLevel.L => QRCodeGenerator.ECCLevel.L,
+            EccLevel.M => QRCodeGenerator.ECCLevel.M,
+            EccLevel.Q => QRCodeGenerator.ECCLevel.Q,
+            EccLevel.H => QRCodeGenerator.ECCLevel.H,
+            _ => QRCodeGenerator.ECCLevel.M
+        };
     }
 }
